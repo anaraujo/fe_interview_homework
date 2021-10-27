@@ -3,6 +3,10 @@ import { px, setNodeStyle, translate3d } from "./utils";
 
 const dropAreaB = document.querySelector("#drop-area-b");
 
+export function hasColumnChanged(evt) {
+	return evt.path[0].id === "drop-area-b";
+}
+
 function reset(mediator) {
 	document.removeEventListener("mousemove", mediator.receive);
 	document.removeEventListener("mouseup", mediator.receive);
@@ -65,7 +69,7 @@ const dndMediator = new Mediator("idle", {
 	},
 	dragging: {
 		mousemove(evt) {
-			if (evt.path[0].id === "drop-area-b") {
+			if (hasColumnChanged(evt)) {
 				dropAreaB.appendChild(dropShadow);
 			} else if (dropAreaB.hasChildNodes()) {
 				dropAreaB.removeChild(dropAreaB.childNodes[0]);
@@ -75,7 +79,8 @@ const dndMediator = new Mediator("idle", {
 				transform: translate3d(evt.clientX - cachedOffsetCoords[0], evt.clientY - cachedOffsetCoords[1])
 			});
 		},
-		mouseup() {
+		mouseup(evt) {
+			if (hasColumnChanged(evt)) dropAreaB.appendChild(cachedCurrentTarget);
 			reset(dndMediator);
 			dndMediator.setState("idle");
 		}
