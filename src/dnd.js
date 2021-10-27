@@ -1,10 +1,13 @@
 import { Mediator } from "./mediator";
 import { px, setNodeStyle, translate3d } from "./utils";
 
-const dropAreaB = document.querySelector("#drop-area-b");
+const validColumns = [ "drop-area-a", "drop-area-b" ];
 
-export function hasColumnChanged(evt) {
-	return evt.path[0].id === "drop-area-b";
+function hasColumnChanged(evt) {
+	const currentTarget = evt.target;
+	const isValidColumn = !!(currentTarget.id && validColumns.includes(targetColumn.id));
+
+	return !!(isValidColumn && originColumn !== currentTarget);
 }
 
 function reset(mediator) {
@@ -13,7 +16,7 @@ function reset(mediator) {
 	mediator.setState("idle");
 	document.body.removeChild(cachedDragImage);
 
-	if (dropAreaB.hasChildNodes()) dropAreaB.removeChild(dropShadow);
+	if (targetColumn.hasChildNodes()) targetColumn.removeChild(dropShadow);
 }
 
 function defaultDragObject(node, style) {
@@ -26,12 +29,20 @@ let cachedCurrentTarget;
 let cachedOffsetCoords;
 let cachedDragImage;
 let dropShadow;
+var originColumn;
+var targetColumn;
 
 const dndMediator = new Mediator("idle", {
 	idle: {
 		async mousedown(evt) {
 			evt.preventDefault();
 			evt.stopPropagation();
+
+			const originId = evt.path[1].id;
+			const targetId = validColumns.find((e) => e !== originId);
+
+			originColumn = document.getElementById(originId);
+			targetColumn = document.getElementById(targetId);
 
 			cachedCurrentTarget = evt.currentTarget;
 			const rect = cachedCurrentTarget.getBoundingClientRect();
@@ -70,9 +81,9 @@ const dndMediator = new Mediator("idle", {
 	dragging: {
 		mousemove(evt) {
 			if (hasColumnChanged(evt)) {
-				dropAreaB.appendChild(dropShadow);
-			} else if (dropAreaB.hasChildNodes()) {
-				dropAreaB.removeChild(dropAreaB.childNodes[0]);
+				targetColumn.appendChild(dropShadow);
+			} else if (targetColumn.hasChildNodes()) {
+				targetColumn.removeChild(targetColumn.childNodes[0]);
 			}
 
 			setNodeStyle(cachedDragImage, {
@@ -80,7 +91,7 @@ const dndMediator = new Mediator("idle", {
 			});
 		},
 		mouseup(evt) {
-			if (hasColumnChanged(evt)) dropAreaB.appendChild(cachedCurrentTarget);
+			if (hasColumnChanged(evt)) targetColumn.appendChild(cachedCurrentTarget);
 			reset(dndMediator);
 			dndMediator.setState("idle");
 		}
