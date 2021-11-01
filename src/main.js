@@ -6,7 +6,7 @@ const dragme = createDOMNode(
 	"div",
 	{
 		onmousedown: onDrag,
-		className: "dragme px-2 py-4 rounded-md"
+		className: "dragme rounded-md"
 	},
 	"Drag me"
 );
