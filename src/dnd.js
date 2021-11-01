@@ -55,12 +55,14 @@ const dndMediator = new Mediator("idle", {
 				pointerEvents: "none",
 				top: 0,
 				left: 0,
-				opacity: 0.5
+				opacity: 0.5,
+				backgroundColor: "#564260"
 			});
 			dropShadow = defaultDragObject(cachedCurrentTarget, {
 				pointerEvents: "none",
-				opacity: 0.2,
-				backgroundColor: "gray"
+				color: "#7a43f3",
+				backgroundColor: "rgba(122, 67, 243, .1)",
+				border: "1px dashed #7a43f3"
 			});
 
 			setNodeStyle(cachedDragImage, {
